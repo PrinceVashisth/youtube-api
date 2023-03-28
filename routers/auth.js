@@ -4,16 +4,24 @@ const bcrypt = require('bcryptjs');
 
 
 router.post('/',async(req,res)=>{
-  const salt = await bcrypt.genSalt(10);
-    const HassPassword = await bcrypt.hash(req.body.password,salt);
-    const user =await new User({
-     name:req.body.name,
-     age:req.body.age,
-     email:req.body.email,
-     Password:HassPassword
-   });
-   const respo = await user.save();
-   res.send(respo);
+  // const salt = await bcrypt.genSalt(10);
+     var salt = await bcrypt.genSaltSync(10);
+    // const HassPassword = await bcrypt.hash(req.body.password,salt);
+    const HashPassword = await bcrypt.hashSync(req.body.Password, salt);
+    const PrevUser = await User.findOne({email:req.body.email});
+    if(PrevUser){
+     res.send('Email Already Exist Use Another One');
+    }else{
+      const user = await new User({
+       name:req.body.name,
+       age:req.body.age,
+       email:req.body.email,
+       Password:HashPassword,
+       profilePhoto:req.body.profilePhoto
+     });
+      await user.save();
+     res.send("user creacted Sucessfully");
+    }
 });
 
 router.post('/login',async(req,res)=>{

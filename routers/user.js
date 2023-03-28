@@ -3,6 +3,12 @@ const User = require('../models/User');
 const Channel = require('../models/Channel');
 const videos = require('../models/videos');
 
+// Get A User
+router.get('/:id',async(req,res)=>{
+  const {Password,...user} = await User.findById(req.params.id);
+  res.send(user._doc);
+})
+
 // Subscribe a Channel or unsubscribed
 router.put('/:id',async(req,res)=>{
   try {
@@ -85,10 +91,11 @@ router.put('/remove/:id',async(req,res)=>{
 });
 
 // Delete all Videos From History
-router.put('/removeAll',async(req,res)=>{
+router.put('/video/remove/removeAll',async(req,res)=>{
   try {
     const currUser = await User.findById(req.body.userId);
-    const result = await currUser.update({$pull:{watchHistory}});
+    const Videos =[...currUser.watchHistory];
+    const result = await currUser.updateOne({$pullAll:{watchHistory:Videos}});
     res.send(result);
   } catch(error){
     res.send(error);
@@ -158,8 +165,19 @@ router.put('/report/video/:id',async(req,res)=>{
     res.send(error);
   } 
 });
+ 
+// See All Reported Videos
+router.get('/seeReports/Videos/:id',async(req,res)=>{
+     const user = await User.findById(req.params.id);
+     let Videos=[];
+     for(let count=0;count<user.ReportedVideos.length;count++){
+      const video = await videos.findById(user.ReportedVideos[count]);
+      Videos.push(video);
+     }
+     res.send(Videos);
+});
 
-// Get All Channel From a User
+// Get All Channel From a User's Channel
 router.get('/getAllChannels/:cname',async(req,res)=>{
     try {
     const channel = await Channel.findOne({channelName:req.params.cname}); 
@@ -171,5 +189,32 @@ router.get('/getAllChannels/:cname',async(req,res)=>{
     }
 });
 
-// See all reported post 
+router.get('/findChannels/User/Channel/:id',async(req,res)=>{
+ try{
+  const channels = await Channel.find({userId:req.params.id});
+  res.send(channels);
+  } catch (error) {
+    res.send(error);
+  }
+})
+
+// Put a video in WatchLater Videos
+router.put('/getvideo/Video/:id',async(req,res)=>{
+     const user = await User.findById(req.body.userId);
+     if(user.WatchLater.includes(req.params.id)){
+       await User.updateOne({$pull:{WatchLater:req.params._id}});
+      res.send("Added To WatchLater"); 
+     }
+});
+
+// get all Watch Later Videos
+// router.get('/getVideo/:id',async(req,res)=>{
+//   let Videos=[];  
+//   const user = await User.findById(req.params.id);
+//     for(let i=0;i<user.WatchLater.length;i++){
+//      const video = await videos.findById(user.WatchLater[i]);
+//       Videos.push(video);
+//     }
+// });
+
 module.exports=router;

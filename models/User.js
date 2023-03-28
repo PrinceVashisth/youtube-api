@@ -20,7 +20,9 @@ const UserSchema=new mongoose.Schema({
     
     comments:{type:Array, default:[]},
     
-    ReportedVideos:{ type:Array, default:[]}
+    ReportedVideos:{ type:Array, default:[]},
+
+    WatchLater:{type:Array,default:[]},
 
 },{timestamps:true});
 
