@@ -12,6 +12,15 @@ app.use('/api/UserAuth',UserAuth);
 app.use('/api/videos',videos);
 app.use('/api/user',User);
 app.use('/api/channel',Channels);
+
+app.get('/',async(req,res)=>{
+    try {
+        res.send('Connected To this Api...................');
+    } catch (error) {
+        res.send(error);
+    }
+})
+
 app.listen(port,()=>{
     console.log(`app is running at ${port} .....`);
 })
