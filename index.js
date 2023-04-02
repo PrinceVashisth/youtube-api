@@ -10,7 +10,7 @@ const User= require('./routers/user');
 const Channels = require('./routers/channels');
 
 app.use(cors({
-    origin:"https://comforting-pastelito-7f045a.netlify.app/",
+    origin:"https://comforting-pastelito-7f045a.netlify.app",
     methods:["GET","POST","PUT","DELETE"]
 }))
 app.use('/api/UserAuth',UserAuth);
