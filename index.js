@@ -11,7 +11,7 @@ const Channels = require('./routers/channels');
 
 app.use(cors({
     origin:"https://comforting-pastelito-7f045a.netlify.app/",
-    methods:["get","post","put","delete"]
+    methods:["GET","POST","PUT","DELETE"]
 }))
 app.use('/api/UserAuth',UserAuth);
 app.use('/api/videos',videos);
