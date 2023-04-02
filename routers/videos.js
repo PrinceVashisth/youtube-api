@@ -3,15 +3,55 @@ const User = require('../models/User');
 const videos = require('../models/videos');
 const Channel = require('../models/Channel');
 
+const fs = require("fs");
+const path = require("path");
+
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    if (!fs.existsSync("public")) {
+      fs.mkdirSync("public");
+    }
+
+    if (!fs.existsSync("public/videos")) {
+      fs.mkdirSync("public/videos");
+    }
+
+    cb(null, "public/videos");
+  },
+  filename: function (req, file, cb) {
+    cb(null, Date.now() + file.originalname);
+  },
+});
+
+const upload = multer({
+  storage: storage,
+  fileFilter: function (req, file, cb) {
+    var ext = path.extname(file.originalname);
+
+    if (ext !== ".mkv" && ext !== ".mp4") {
+      return cb(new Error("Only videos are allowed!"));
+    }
+
+    cb(null, true);
+  },
+});
+
 // Create a Video this id is of channel  
-router.post('/:id',async(req,res)=>{
+router.post('/:id', 
+ upload.fields([
+  {
+    name: "videos",
+    maxCount: 1,
+  },
+]),async(req,res)=>{
     try {
+       const uploadingVideo = "/"+req.files.videos;
         const Video = await new videos({
             userId:req.params.id,
             title:req.body.title,
             desc:req.body.desc,
             thumbnail:req.body.thumbnail,
-            video:req.body.video
+            video:uploadingVideo
         });
      const channel = await Channel.findById(req.params.id);
      await Video.save();
