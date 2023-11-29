@@ -10,7 +10,7 @@ const User= require('./routers/user');
 const Channels = require('./routers/channels');
 
 app.use(cors({
-    origin:["youtube-clone-chi-navy.vercel.app","gentle-sunflower-88b7f8.netlify.app"],
+    origin:'*',
     methods:["GET","POST","PUT","DELETE"]
 }))
 app.use('/api/UserAuth',UserAuth);
